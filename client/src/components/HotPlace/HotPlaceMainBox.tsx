@@ -26,7 +26,7 @@ const HotPlaceMainBox: React.FunctionComponent = () => {
     ],
   ];
   return (
-    <div className="col-start-3 col-end-11 bg-white rounded-[15px] drop-shadow-xl flex flex-col items-center p-8">
+    <div className="col-span-6 tablet:col-start-3 tablet:col-end-11 bg-white rounded-[15px] drop-shadow-xl flex flex-col items-center p-8">
       <p className="text-gray text-center">{`요즘 핫한 포토존은?
 FINDVIBE가 모은 순위`}</p>
       <div className="flex-row items-center my-4">

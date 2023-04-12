@@ -4,7 +4,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        pretendard: ["Pretendard-Regular", "sans-serif"],
+        pretendard: ["Pretendard-Regular", "Apple SD Gothic Neo", "sans-serif"],
+        pretendardBold: [
+          "Pretendard-Bold",
+          "Apple SD Gothic Neo",
+          "sans-serif",
+        ],
       },
       screens: {
         tablet: "640px",

@@ -13,8 +13,10 @@ const IndexRecommendItem: React.FunctionComponent<IndexRecommendProps> = ({
 }) => {
   return (
     <>
-      <div className="col-start-2 col-span-2 self-center">{title}</div>
-      <div className="col-start-4 col-end-10">
+      <div className="text-[10px] tablet:text-[1em] tablet:col-start-2 tablet:col-span-2 self-center">
+        {title}
+      </div>
+      <div className="col-span-4 tablet:col-start-4 tablet:col-end-10">
         <div
           className="bg-[#FF7B54] h-[2em]"
           style={{
@@ -23,7 +25,7 @@ const IndexRecommendItem: React.FunctionComponent<IndexRecommendProps> = ({
           }}
         ></div>
       </div>
-      <div className="col-start-10 col-end-12 justify-self-end self-center text-gray">
+      <div className="tablet:col-start-10 tablet:col-end-12 justify-self-end self-center text-gray">
         {count + "회"}
       </div>
     </>

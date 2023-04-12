@@ -9,6 +9,17 @@ import { sendLogOutRequest } from "../../API/auth";
 
 const GlobalNavigationBar: React.FunctionComponent = () => {
   const [headerHeight, setHeaderHeight] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+    const throttleResize = throttle(handleResize, 150);
+    window.addEventListener("resize", throttleResize);
+    return () => window.removeEventListener("resize", throttleResize);
+  }, []);
+
   const navigate = useNavigate();
   let before = 0;
   let diff = 0;
@@ -38,6 +49,7 @@ const GlobalNavigationBar: React.FunctionComponent = () => {
       () => navigate("/signin"),
       (result: boolean) => setIsLogin(result)
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const renderAuthButtons = () => {
@@ -45,7 +57,7 @@ const GlobalNavigationBar: React.FunctionComponent = () => {
       return (
         <div className="col-start-12 justify-self-end justify-between w-[150px] flex">
           <button
-            className="bg-gradient-to-r from-deeporange to-shalloworange px-4 py-2 rounded-full text-white flex items-center justify-center font-bold"
+            className="bg-gradient-to-r from-deeporange to-shalloworange px-4 py-2 rounded-full text-white flex items-center justify-center font-pretendardBold"
             onClick={() => {
               sendLogOutRequest().then(() => navigate("/signin"));
             }}
@@ -59,7 +71,7 @@ const GlobalNavigationBar: React.FunctionComponent = () => {
         <div className="col-start-12 justify-self-end justify-between w-[150px] flex">
           <button onClick={() => navigate("/signin")}>로그인</button>
           <button
-            className="bg-gradient-to-r from-deeporange to-shalloworange px-4 py-2 rounded-full text-white flex items-center justify-center font-bold"
+            className="bg-gradient-to-r from-deeporange to-shalloworange px-4 py-2 rounded-full text-white flex items-center justify-center font-pretendardBold"
             onClick={() => navigate("/signup")}
           >
             회원가입
@@ -82,11 +94,18 @@ const GlobalNavigationBar: React.FunctionComponent = () => {
         <button className="justify-self-start">
           <LogoSvg />
         </button>
-        <div className="ml-[20px] col-start-4 w-[220px] flex items-center justify-between ">
-          <button>후기</button>
-          <button onClick={() => navigate("/hotplace")}>인기장소</button>
-          <button>장소찾기</button>
-        </div>
+        {screenWidth >= 640 && (
+          <div className="ml-[20px] col-start-4 w-[220px] flex items-center justify-between">
+            <button className="invisible tablet:visible">후기</button>
+            <button
+              className="invisible tablet:visible"
+              onClick={() => navigate("/hotplace")}
+            >
+              인기장소
+            </button>
+            <button className="w-[0px] tablet:w-auto">장소찾기</button>
+          </div>
+        )}
         {renderAuthButtons()}
       </GridLayout>
     </nav>

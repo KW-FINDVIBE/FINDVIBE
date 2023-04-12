@@ -19,20 +19,21 @@ const FindLocationGetImageBox: React.FunctionComponent<FindLocationProps> = ({
   };
 
   const handleFile = (files: FileList) => {
-    const fileList: File[] = [];
+    const fileList: Set<File> = new Set();
+
     for (let i = 0; i < files.length; i++) {
-      const fileName = files[i].name
+      const fileType = files[i].name
         .split(".")
         .slice(-1)
         .toString()
         .toLocaleUpperCase();
-      if (fileName !== "JPG" && fileName !== "PNG") {
+      if (fileType !== "JPG" && fileType !== "PNG" && fileType !== "JPEG") {
         alert("지원하지 않는 파일 포멧입니다!");
         return;
       }
-      fileList.push(files[i]);
+      fileList.add(files[i]);
     }
-    setImageList([...imageList, ...fileList]);
+    setImageList([...imageList, ...Array.from(fileList)]);
   };
 
   return (
@@ -48,7 +49,7 @@ const FindLocationGetImageBox: React.FunctionComponent<FindLocationProps> = ({
         accept=".jpg, .png"
       />
       <div
-        className="relative z-50 col-start-2 col-end-12 h-[30vh] drop-shadow-xl bg-white flex flex-col items-center overflow-y-scroll"
+        className="relative z-50 col-span-6 tablet:col-start-2 tablet:col-end-12 h-[30vh] shadow-xl bg-white flex flex-col items-center overflow-y-scroll"
         style={{
           justifyContent: imageList.length > 0 ? "start" : "center",
         }}
@@ -68,31 +69,33 @@ const FindLocationGetImageBox: React.FunctionComponent<FindLocationProps> = ({
             {imageList.map((item, idx) => (
               <div
                 key={idx}
-                className="w-full flex flex-row items-center justify-between text-black bg-[#D9D9D9] py-1 px-2"
+                className="w-full flex flex-col tablet:flex-row items-start tablet:items-center justify-between text-black bg-[#D9D9D9] p-2 tablet:py-1 tablet:px-2"
               >
                 <div className="flex flex-row items-center">
                   <div className="bg-deeporange rounded-full w-[0.7em] h-[0.7em] mr-[1em]"></div>
                   <span>{item.name}</span>
                 </div>
                 <div className="flex-grow"></div>
-                <div className="text-gray text-[0.7em] flex flex-row items-center mr-[3em]">
-                  <span className="mr-[2px]">결과에 만족하셨나요?</span>
-                  {Array(5)
-                    .fill(0)
-                    .map((_, idx) => {
-                      return (
-                        <div
-                          key={idx}
-                          className="bg-shalloworange rounded-full w-[0.7em] h-[0.7em] mx-[2px]"
-                        ></div>
-                      );
-                    })}
-                </div>
-                <div className="flex flex-row items-center">
-                  <span>위치분석 중</span>
-                  <button className="ml-2 bg-deeporange px-2 py-1 text-white">
-                    위치보기
-                  </button>
+                <div className="w-full tablet:w-auto mt-2 tablet:mt-0 flex flex-row items-center justify-between">
+                  <div className="text-gray text-[0.7em] flex flex-row items-center mr-[3em]">
+                    <span className="mr-[2px]">결과에 만족하셨나요?</span>
+                    {Array(5)
+                      .fill(0)
+                      .map((_, idx) => {
+                        return (
+                          <div
+                            key={idx}
+                            className="bg-shalloworange rounded-full w-[0.7em] h-[0.7em] mx-[2px]"
+                          ></div>
+                        );
+                      })}
+                  </div>
+                  <div className="flex flex-row items-center">
+                    <span>위치분석 중</span>
+                    <button className="ml-2 bg-deeporange px-2 py-1 text-white">
+                      위치보기
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -107,9 +110,11 @@ const FindLocationGetImageBox: React.FunctionComponent<FindLocationProps> = ({
             </button>
           </>
         ) : (
-          <div className="flex items-center">
+          <div className="flex items-center p-4">
             <PlusIconSvg />
-            <>이곳에 드래그 앤 드랍 혹은 클릭하여 이미지를 업로드하세요.</>
+            <p className="ml-4 break-keep">
+              이곳에 드래그 앤 드랍 혹은 클릭하여 이미지를 업로드하세요.
+            </p>
           </div>
         )}
       </div>

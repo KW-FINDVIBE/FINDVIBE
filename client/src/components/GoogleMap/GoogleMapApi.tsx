@@ -8,6 +8,8 @@ import {
 } from "@react-google-maps/api";
 import { useState, useEffect, useLayoutEffect } from "react";
 import cursor from "../../assets/Svg/Cursor.svg";
+import camera from "../../assets/Svg/Camera.svg";
+import isIos from "./../DetectDevice/isIos";
 
 interface GoogleMapApiProps {
   coordinate: { lat: number; lng: number }[][];
@@ -23,8 +25,16 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
 
   const [map, setMap] = useState<google.maps.Map>();
   const [rotatedMarkers, setRotatedMarkers] = useState<string[][]>([]);
+  const koreaUniverSity = {
+    lat: 37.588556,
+    lng: 127.019981,
+  };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    if (isIos) {
+      setSelectedLocationIndex(coordinate.length - 1);
+      return;
+    }
     class RotateIcon {
       img: any;
       canvas: any;
@@ -33,15 +43,14 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
       constructor() {
         let img = new Image();
         img.src = cursor;
-        
+
         this.img = img;
 
         let canvas = document.createElement("canvas");
-        canvas.width = 30;
+        canvas.width = 45;
         canvas.height = 45;
         this.context = canvas.getContext("2d");
         this.canvas = canvas;
-
       }
     }
     interface RotateIcon {
@@ -49,10 +58,18 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
       getUrl(): string;
     }
     RotateIcon.prototype.setRotation = function (deg: number) {
-      let angle = (deg * 360 * Math.PI) / 180,
-        centerX = 60 / 2,
-        centerY = 60 / 2;
+      let angle = (deg * Math.PI) / 180,
+        centerX = 45 / 2,
+        centerY = 45 / 2;
+
+      this.context.clearRect(0, 0, 45, 45);
+      this.context.save();
+      this.context.translate(centerX, centerY);
+      this.context.rotate(angle);
+      this.context.translate(-centerX, -centerY);
       this.context.drawImage(this.img, 0, 0);
+      this.context.restore();
+
       return this;
     };
 
@@ -79,10 +96,6 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
 
     const newMarkerList: string[][] = [];
 
-    const koreaUniverSity = {
-      lat: 37.588556,
-      lng: 127.019981,
-    };
     let rotateIcon = new RotateIcon();
     coordinate.forEach((selected) => {
       const markerList: string[] = [];
@@ -95,18 +108,24 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
     });
 
     setRotatedMarkers(newMarkerList);
-    setSelectedLocationIndex(coordinate.length - 1);
-  }, [map, coordinate.length]);
+    setTimeout(() => {
+      setSelectedLocationId(null);
+      setSelectedLocationIndex(newMarkerList.length - 1);
+    }, 300);
+  }, [map, coordinate]);
+
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_KEY as string,
   });
+
   useEffect(() => {
-    if (isLoaded && selectedLocationIndex) {
+    if (map && isLoaded) {
       const bounds = new window.google.maps.LatLngBounds();
+      bounds.extend(koreaUniverSity);
       coordinate[selectedLocationIndex]?.forEach((item) => {
         bounds.extend(item);
       });
-      map?.fitBounds(bounds);
+      map.fitBounds(bounds);
     }
   }, [isLoaded, map, selectedLocationIndex]);
 
@@ -115,11 +134,11 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
   }
   return (
     <>
-      <div className="col-start-1 flex flex-col items-center justify-center">
+      <div className="col-span-6 tablet:col-start-2 tablet:col-span-1 flex flex-row tablet:flex-col items-center justify-center">
         {coordinate.map((_, idx) => {
           return (
             <button
-              className="w-full"
+              className="w-full font-pretendardBold border border-white my-[0.5em] p-2 rounded-md hover:bg-deeporange bg-shalloworange"
               key={idx}
               onClick={() => {
                 setSelectedLocationId(null);
@@ -132,7 +151,7 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
         })}
       </div>
 
-      <div className="col-start-2 col-end-12 h-[50dvh]">
+      <div className="col-span-6 tablet:col-start-3 tablet:col-end-12 h-[50dvh]">
         <GoogleMap
           onLoad={(map) => {
             setMap(map);
@@ -154,6 +173,21 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
             height: "50vh",
           }}
         >
+          <div className="invisible">
+            <MarkerF
+              position={{ lat: 0, lng: 0 }}
+              icon={{
+                url: cursor,
+              }}
+            />
+          </div>
+
+          <MarkerF
+            position={koreaUniverSity}
+            icon={{
+              url: camera,
+            }}
+          />
           <MarkerClustererF>
             {(clusterer) => {
               return (
@@ -166,9 +200,10 @@ const GoogleMapApi: React.FunctionComponent<GoogleMapApiProps> = ({
                         clusterer={clusterer}
                         icon={{
                           scale: 1,
-                          url:
-                            rotatedMarkers[selectedLocationIndex][idx] ??
-                            cursor,
+                          url: isIos
+                            ? cursor
+                            : rotatedMarkers[selectedLocationIndex][idx] ??
+                              cursor,
                         }}
                         onClick={() => setSelectedLocationId(idx)}
                       >

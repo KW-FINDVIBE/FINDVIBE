@@ -27,8 +27,8 @@ const IndexRecommend: React.FunctionComponent = () => {
   const maxCount = 72;
   return (
     <>
-      <div className="col-start-2 col-end-12 mt-[4em] mb-[2em]">
-        <p className="text-[2em] font-bold">인기 촬영지 제공</p>
+      <div className="col-span-6 tablet:col-start-2 tablet:col-end-12 mt-[4em] mb-[2em]">
+        <p className="text-[2em] font-pretendardBold">인기 촬영지 제공</p>
         <p>누군가의 추억이 깃들어있는, 인기있는 장소를 알려드립니다.</p>
       </div>
       {tempData

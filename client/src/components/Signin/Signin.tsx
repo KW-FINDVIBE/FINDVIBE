@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogInUserInfo, sendLogInRequest } from "../../API/auth";
 import GridLayout from "../Layout/GridLayout";
+import cursor from "../../assets/Svg/Cursor.svg";
 
 const Signin: React.FunctionComponent = () => {
   const navigate = useNavigate();
@@ -12,20 +13,18 @@ const Signin: React.FunctionComponent = () => {
   });
 
   return (
-    <main
-      className="relative w-full h-full top-[64px] "
-      style={{
-        height: "calc(100vh - 64px)",
-      }}
-    >
+    <main className="relative w-full h-full h-[calc(100svh - 64px)]">
       <GridLayout>
         <div
-          className="col-start-5 col-end-9  flex flex-col items-center justify-center"
+          className="col-span-6 tablet:col-start-3 tablet:col-end-11 desktop:col-start-5 desktop:col-end-9 flex flex-col items-center justify-center"
           style={{
-            height: "calc(100vh - 64px)",
+            height: "calc(100svh - 64px)",
           }}
         >
-          <div className="text-[#FF7B54] font-bold text-[2em]">로그인</div>
+          <img className="w-[3em] mb-[1em]" src={cursor} alt="" />
+          <div className="text-[#FF7B54] font-pretendardBold text-[2em]">
+            로그인
+          </div>
           <input
             className="w-full rounded-[0.4em] border border-[1px] border-gray outline-0 px-4 py-2 my-2"
             placeholder="이메일"
@@ -49,7 +48,7 @@ const Signin: React.FunctionComponent = () => {
               <button className="text-gray mx-4">비밀번호 찾기</button>
             </div>
             <button
-              className="bg-gradient-to-r from-deeporange to-shalloworange px-4 py-2 rounded-full text-white flex items-center justify-center font-bold"
+              className="bg-gradient-to-r from-deeporange to-shalloworange px-4 py-2 rounded-full text-white flex items-center justify-center font-pretendardBold"
               onClick={() => {
                 sendLogInRequest(userData).then((res) => {
                   if (res.success) {

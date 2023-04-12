@@ -8,7 +8,12 @@ const App: React.FunctionComponent = () => {
   const FindLocationPage = lazy(() => import("./pages/FindLocationPage"));
   const HotPlacePage = lazy(() => import("./pages/HotPlacePage"));
   return (
-    <div className="w-full min-h-screen font-pretendard text-[16px] whitespace-pre-line scrollbar-hide">
+    <div
+      className="w-full min-h-screen font-pretendard text-[16px] whitespace-pre-line scrollbar-hide"
+      style={{
+        WebkitFontSmoothing: "antialiased",
+      }}
+    >
       <Suspense>
         <Routes>
           <Route path="/" element={<IndexPage />} />
