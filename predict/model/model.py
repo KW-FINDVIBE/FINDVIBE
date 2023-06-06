@@ -14,7 +14,7 @@ import tensorflow_hub as hub
 from six.moves.urllib.request import urlopen
 import scipy.io
 from time import time
-from utils import getImage_and_resize, load_saved_delf_data
+from model.utils import getImage_and_resize, load_saved_delf_data
 
 delf = hub.load('https://tfhub.dev/google/delf/1').signatures['default']
 
@@ -107,14 +107,20 @@ def match_images(result1, result2, gps, label, image1=None, image2=None):
 
   return [inliers_num, label] + list(gps)
   
-def run_model(url):
+def run_model(url, data, labels, images, gps_compass):
+  url = url
+  data = data
+  labels = labels
+  images = images
+  gps_compass = gps_compass
+  print('start')
   img_path = tf.keras.utils.get_file(url.split('/')[-1], url)
-    
+  
   input_data_image, input_data_array = getImage_and_resize(img_path)
-  
+  print('start1')
   input_data = run_delf(input_data_array)
-  
-  compare_data = data[:]
+  print('start2')
+  compare_data = data[:10]
 
   start = time()
 
@@ -125,47 +131,48 @@ def run_model(url):
                                   result2=compare_data[i], 
                                   gps=gps_compass[labels[i]], 
                                   label=labels[i], 
-                                  image1=input_data_array.astype(dtype='uint8')), 
-                                  image2=images[i].astype(dtype='uint8'))
+                                  image1=input_data_array.astype(dtype='uint8'), 
+                                  image2=images[i].astype(dtype='uint8')))
   end = time()
 
   inliers_sorted = sorted(inliers, key=lambda x: x[0], reverse=True)
 
   print('run time: ', end-start)
-
+  # print("model data", inliers_sorted[0])
   return inliers_sorted
 
 # if __name__ == '__main__':
-#     data, labels, images = load_saved_delf_data() # main server 실행 시 미리 실행 필요
+#     data, labels, images, gps_compass = load_saved_delf_data() # main server 실행 시 미리 실행 필요
 
-#     gps = scipy.io.loadmat('Dataset/GPS_Long_Lat_Compass.mat')
-#     gps_compass = gps['GPS_Compass']
-#     florida_idx=np.where(gps_compass[:,0]<=32.5)[0]
+#     # gps = scipy.io.loadmat('Dataset/GPS_Long_Lat_Compass.mat')
+#     # gps_compass = gps['GPS_Compass']
+#     # florida_idx=np.where(gps_compass[:,0]<=32.5)[0]
 
-#     # gps_florida = gps_compass[florida_idx]
-#     url = 'https://upload.wikimedia.org/wikipedia/commons/2/28/Bridge_of_Sighs%2C_Oxford.jpg'
-#     input_data_path = tf.keras.utils.get_file(url.split('/')[-1], url)
+#     # # gps_florida = gps_compass[florida_idx]
+#     test_src = 'https://upload.wikimedia.org/wikipedia/commons/2/28/Bridge_of_Sighs%2C_Oxford.jpg'
+#     # input_data_path = tf.keras.utils.get_file(url.split('/')[-1], url)
     
-#     input_data_image, input_data_array = getImage_and_resize(input_data_path)
+#     # input_data_image, input_data_array = getImage_and_resize(input_data_path)
     
-#     input_data = run_delf(input_data_array)
+#     # input_data = run_delf(input_data_array)
     
-#     compare_data = data[:10]
+#     # compare_data = data[:]
 
-#     start = time()
+#     # start = time()
 
-#     inliers=[]
+#     # inliers=[]
 
-#     for i in range(0,len(compare_data),5):
-#         inliers.append(match_images(result1=input_data, 
-#                                     result2=compare_data[i], 
-#                                     gps=gps_compass[labels[i]], 
-#                                     label=labels[i], 
-#                                     image1=input_data_array.astype(dtype='uint8'),
-#                                     image2=images[i].astype(dtype='uint8')))
-#     end = time()
+#     # for i in range(0,len(compare_data),5):
+#     #     inliers.append(match_images(result1=input_data, 
+#     #                                 result2=compare_data[i], 
+#     #                                 gps=gps_compass[labels[i]], 
+#     #                                 label=labels[i], 
+#     #                                 image1=input_data_array.astype(dtype='uint8'),
+#     #                                 image2=images[i].astype(dtype='uint8')))
+#     # end = time()
 
-#     inliers_sorted = sorted(inliers, key=lambda x: x[0], reverse=True)
+#     # inliers_sorted = sorted(inliers, key=lambda x: x[0], reverse=True)
+#     pr_loc_data_list = run_model(test_src, data=data, labels=labels, images=images, gps_compass=gps_compass)
 
 #     print('run time: ', end-start)
 
